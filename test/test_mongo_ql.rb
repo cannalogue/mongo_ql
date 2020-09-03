@@ -22,7 +22,11 @@ class TestMontoQL < Minitest::Test
       {"$group"   => {"_id" => "$customer", "name" => { "$first" => "$name" }, "year" => { "$first" => "$year" }, "total" => {"$sum" => "$total"}, "total_tax" => {"$multiply" => [{"$sum" => "$tax"}, 5]}}},
       {"$sort"    => {"age" => -1}},
       {"$limit"   => 1},
-      {"$match" => {"into" => "orders", "on" => "_id", "whenMatched" => "merge", "whenNotMatched" => "insert" }},
+      {"$merge"   => {"into" => "orders", "on" => "_id", "whenMatched" => "merge", "whenNotMatched" => "insert" }},
+      {"$merge"   => {"into" => "orders", "on" => "_id", "whenMatched" => [
+        {"$addFields" => {"new_field_to_be_inserted_after_merge"=> "$$var_quantity"}},
+        {"$project" => { "new_field_to_be_inserted_after_merge" => 1, "_id" => 1 }},
+      ], "whenNotMatched" => "fail","let"=>{"var_quantity"=>1}}},
     ]
   end
 
@@ -63,10 +67,13 @@ class TestMontoQL < Minitest::Test
 
       limit   1
 
-
-      mergeabc orders, on: _id, when_matched: merge, when_not_matched: insert
+      merge orders, on: _id, when_matched: :merge, when_not_matched: :insert
+      merge orders, on: _id, when_not_matched: :fail do |var|
+        var.quantity = 1
+        add_fields new_field_to_be_inserted_after_merge => var.quantity
+        project new_field_to_be_inserted_after_merge, _id
+      end
     end
-
     assert_equal pipeline.to_ast, @result_pipeline
   end
 end

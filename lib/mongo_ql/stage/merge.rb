@@ -38,19 +38,19 @@ module MongoQL
     def initialize(ctx, into, on: nil, when_matched: nil, when_not_matched:, &block)
       @ctx       = ctx
       @into      = collection_name(into)
-      @on        = on
-      @when_not_matched = when_not_matched
+      @on        = field_name(on)
+      @when_not_matched = when_not_matched.to_s
       @nested_pipeline_block = block
 
-      if ["insert", "discard", "fail"].include?(when_not_matched)
+      unless ["insert", "discard", "fail"].include?(when_not_matched.to_s)
         raise ArgumentError, "when_not_matched must be one of <insert|discard|fail>"
       end
 
       if has_nested_pipeline?
         @let_vars = NestedPipelineVars.new
         @nested_pipeline = eval_nested_pipeline
-      elsif ["replace", "keepExisting", "merge", "fail"].include?(when_matched)
-        @when_matched = when_matched
+      elsif ["replace", "keepExisting", "merge", "fail"].include?(when_matched.to_s)
+        @when_matched = when_matched.to_s
       else
         raise ArgumentError, "when_not_matched must be one of <replace|keepExisting|merge|fail|pipeline>"
       end
@@ -97,6 +97,19 @@ module MongoQL
           else
             raise ArgumentError, "#{into} is not a valid collection"
           end
+        end
+      end
+
+      def field_name(on)
+        case on
+        when String, Symbol
+          on
+        when Expression::FieldNode
+          on.to_s
+        when Array
+          on.map(&method(:field_name))
+        else
+          raise ArgumentError, "#{on} is not valid field name"
         end
       end
   end
