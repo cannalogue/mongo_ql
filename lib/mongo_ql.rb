@@ -73,6 +73,7 @@ require_relative "mongo_ql/stage/sort"
 require_relative "mongo_ql/stage/add_fields"
 require_relative "mongo_ql/stage/query"
 require_relative "mongo_ql/stage/limit"
+require_relative "mongo_ql/stage/merge"
 
 require_relative "mongo_ql/stage_context"
 

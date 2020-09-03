@@ -161,3 +161,13 @@ end
   }
 ]
 ```
+
+# How to run test
+`ruby ./test/test_mongo_ql.rb`
+
+# How to debug
+`rdebug-ide --host 0.0.0.0 --port 1234 --dispatcher-port 1234 ./test/test_mongo_ql.rb`
+then run debug from vscode
+
+## debug in console
+`./debug.sh`

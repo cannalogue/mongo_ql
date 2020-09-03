@@ -64,6 +64,11 @@ module MongoQL
     end
     alias_method :Limit, :limit
 
+    def merge(*args, &block)
+      pipeline << Stage::Merge.new(self, *args, &block)
+    end
+    alias_method :Merge, :merge
+
     def method_missing(m, *args, &block)
       if args.size > 0 || !block.nil? || (m.to_s[0] =~ /[A-Za-z]/ && m.to_s[0] == m.to_s[0].upcase)
         raise NoMemoryError, "undefined method `#{m}' for #{self.class}"

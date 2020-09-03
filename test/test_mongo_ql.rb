@@ -21,7 +21,8 @@ class TestMontoQL < Minitest::Test
       {"$project" => {"_id" => 1, "total" => 1, "customer" => "$customers.name", "tax" => {"$multiply" => ["$total", "$tax_rate"]}}},
       {"$group"   => {"_id" => "$customer", "name" => { "$first" => "$name" }, "year" => { "$first" => "$year" }, "total" => {"$sum" => "$total"}, "total_tax" => {"$multiply" => [{"$sum" => "$tax"}, 5]}}},
       {"$sort"    => {"age" => -1}},
-      {"$limit"   => 1}
+      {"$limit"   => 1},
+      {"$match" => {"into" => "orders", "on" => "_id", "whenMatched" => "merge", "whenNotMatched" => "insert" }},
     ]
   end
 
@@ -43,8 +44,8 @@ class TestMontoQL < Minitest::Test
               as: customers
 
       join    shippings, as: shippings do |doc|
-        match  order_id == doc._id,
-               status   == :shipped
+      match   order_id == doc._id,
+              status   == :shipped
       end
 
       match   province == "ON"
@@ -61,6 +62,9 @@ class TestMontoQL < Minitest::Test
       sort_by age.dsc
 
       limit   1
+
+
+      mergeabc orders, on: _id, when_matched: merge, when_not_matched: insert
     end
 
     assert_equal pipeline.to_ast, @result_pipeline
