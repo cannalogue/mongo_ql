@@ -171,3 +171,84 @@ then run debug from vscode
 
 ## debug in console
 `./debug.sh`
+
+# API
+
+## Convert operators
+| method     | mongo operator | example                 |
+|------------|----------------|-------------------------|
+| to_id      | $toObjectId    | string_id_field.to_id   |
+| to_string  | $toString      | id_field.to_string      |
+| to_int     | $toInt         |                         |
+| to_long    | $toLong        | v("10.9").to_long       |
+| to_date    | $toDate        | v("2020-01-19").to_date |
+| to_decimal | $toDecimal     |                         |
+| to_double  | $toDouble      |                         |
+| downcase   | $toLower       | v("Ding").downcase      |
+| upcase     | $toUpper       | name.upcase             |
+
+## Date operators
+| method        | mongo operator | example                             |
+|---------------|----------------|-------------------------------------|
+| year          | $year          | `created_at.as_date.year` # => 2020 |
+| week          | $week          | `created_at.as_date.week`           |
+| month         | $month         | `created_at.as_date.month`          |
+| day_of_month  | $dayOfMonth    | `created_at.as_date.day_of_month`   |
+| day_of_year   | $dayOfYear     |                                     |
+| iso_week      | $isoWeek       |                                     |
+| iso_week_Year | $isoWeekYear   |                                     |
+
+## Binary/Unary operators
+| method | mongo operator | example           |
+|--------|----------------|-------------------|
+| +      | $add           | field1 + field2   |
+| -      | $subtract      | field1 - field2   |
+| *      | $multiply      | field1 * field2   |
+| /      | $divide        | field1 / field2   |
+| >      | $gt            | field1 > 1        |
+| gt?    | $gt            | field1.gt?(5)     |
+| <      | $lt            |                   |
+| lt?    | $lt            |                   |
+| >=     | $gte           |                   |
+| gte?   | $gte           |                   |
+| <=     | $lte           |                   |
+| lte?   | $lte           |                   |
+| !=     | $ne            | field1 != nil     |
+| neq?   | $ne            | field1.neq?(nil)  |
+| ==     | $eq            |                   |
+| eq?    | $eq            |                   |
+| &      | $and           | expr1 & expr2     |
+| \|     | $or            | expr1 \| expr2    |
+| %      | %mod           | `v(12) % 5` #=> 2 |
+| **     | $pow           | field1 ** 2       |
+| !      | $not           | !expr1            |
+
+## Collection operators
+| method                     | mongo operator | example                   | group stage | array      |
+|----------------------------|----------------|---------------------------|-------------|------------|
+| max                        | $max           |                           | yes         | yes        |
+| min                        | $min           |                           | yes         | yes        |
+| sum                        | $sum           |                           | yes         | yes        |
+| size                       | $size          |                           | no          | yes        |
+| push                       | $push          |                           | yes         | no         |
+| reverse                    | $reverseArray  |                           | no          | yes        |
+| first                      | $first         |                           | yes         | no (< 4.4) |
+| last                       | $last          |                           | yes         | no (< 4.4) |
+| filter                     | $filter        |                           | no          | yes        |
+| map                        | $map           |                           | no          | yes        |
+| reduce                     | $reduce        |                           | no          | yes        |
+| any?                       | $filter        |                           | no          | yes        |
+| concat_arrays              | $concatArrays  |                           | no          | yes        |
+| combine_sets               | $setUnion      |                           | no          | yes        |
+| []                         | $arrayElemAt   | docs[0]                   | no          | yes        |
+| contains/includes/include? | $in            | v([1,2]).include?(field1) | no          | yes        |
+
+## String operators
+| method | mongo operator | example                      |
+|--------|----------------|------------------------------|
+| substr | $substr        | name.substr(0, 5)            |
+| trim   | $trim          | name.trim(",")               |
+| concat | $concat        | first_name.concat(last_name) |
+
+## Condition expression
+`If a > b, then: 1, else: 2`
