@@ -47,7 +47,7 @@ module MongoQL
 
     def method_missing(m, *args, &block)
       if args.size > 0 || !block.nil?
-        raise NoMemoryError, "undefined method `#{method_name}' for #{self.class}"
+        raise NoMethodError, "undefined method `#{method_name}' for #{self.class}"
       end
       ctx.send(m, *args, &block)
     end

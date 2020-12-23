@@ -4,37 +4,25 @@ require_relative "binary_operators"
 require_relative "unary_operators"
 require_relative "collection_operators"
 require_relative "string_operators"
+require_relative "convert_operators"
 
 module MongoQL
   class Expression
     include BinaryOperators
     include UnaryOperators
     include CollectionOperators
+    include ConvertOperators
     include StringOperators
 
-    FORMATING_OPS = {
-      "to_object_id": "$toObjectId",
-      "to_id":        "$toObjectId",
-      "to_s":         "$toString",
-      "to_string":    "$toString",
-      "to_int":       "$toInt",
-      "to_long":      "$toLong",
-      "to_bool":      "$toBool",
-      "to_date":      "$toDate",
-      "to_decimal":   "$toDecimal",
-      "to_double":    "$toDouble",
-      "downcase":     "$toLower",
-      "to_lower":     "$toLower",
-      "upcase":       "$toUpper",
-      "to_upper":     "$toUpper"
-    }.freeze
+    def method_missing(method_name, *args, &block)
+      if args.size > 0 || !block.nil? || [:to_hash].include?(method_name.to_sym)
+        raise NoMethodError, "undefined method `#{method_name}' for #{self.class}"
+      end
+      Expression::FieldAccess.new(self, method_name)
+    end
 
-    FORMATING_OPS.keys.each do |op|
-      class_eval <<~RUBY
-        def #{op}
-          Expression::MethodCall.new(FORMATING_OPS[__method__], self)
-        end
-      RUBY
+    def f(field)
+      Expression::FieldAccess.new(self, field.to_s)
     end
 
     def type

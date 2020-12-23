@@ -19,7 +19,7 @@ class TestMontoQL < Minitest::Test
       {"$lookup"  => {"from" => "shippings", "as" => "shippings", "pipeline" => [{"$match" => {"$expr" => {"$and" => [{"$eq" => ["$order_id", "$$var__id"]}, {"$eq" => ["$status", :shipped]}]}}}], "let" => {"var__id" => "$_id"}}},
       {"$match"   => {"$expr" => {"$eq" => ["$province", "ON"]}}},
       {"$project" => {"_id" => 1, "total" => 1, "customer" => "$customers.name", "tax" => {"$multiply" => ["$total", "$tax_rate"]}}},
-      {"$group"   => {"_id" => "$customer", "name" => { "$first" => "$name" }, "year" => { "$first" => "$year" }, "total" => {"$sum" => "$total"}, "total_tax" => {"$multiply" => [{"$sum" => "$tax"}, 5]}}},
+      {"$group"   => {"_id" => "$customer", "name" => { "$first" => "$name" }, "year" => { "$first" => "$year" }, "total" => {"$sum" => "$total"}, "total_tax" => {"$round" => [{"$multiply" => [{"$sum" => "$tax"}, 5]}, 2]}}},
       {"$sort"    => {"age" => -1}},
       {"$limit"   => 1},
       {"$merge"   => {"into" => "orders", "on" => "_id", "whenMatched" => "merge", "whenNotMatched" => "insert" }},
@@ -61,7 +61,7 @@ class TestMontoQL < Minitest::Test
 
       group   customer, name, first_of(year),
               total     => total.sum,
-              total_tax => tax.sum * 5
+              total_tax => (tax.sum * 5).round(2)
 
       sort_by age.dsc
 

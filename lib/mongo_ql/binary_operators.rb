@@ -20,7 +20,9 @@ module MongoQL
       "==": "$eq",
       "eq?":  "$eq",
       "&":  "$and",
+      "and": "$and",
       "|":  "$or",
+      "or": "$or",
       "%":  "$mod",
       "**": "$pow"
     }.freeze
