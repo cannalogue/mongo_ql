@@ -21,9 +21,9 @@ module MongoQL
 
     def exists?(val = true)
       if val
-        self.if_null(nil).eq?(nil)
+        self.if_null(nil).eeq?(nil)
       else
-        self.if_null(nil).neq?(nil)
+        self.if_null(nil).eq?(nil)
       end
     end
 
