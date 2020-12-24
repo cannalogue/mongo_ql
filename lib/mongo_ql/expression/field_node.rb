@@ -19,6 +19,14 @@ module MongoQL
       Expression::FieldNode.new("#{field_name}.#{field}")
     end
 
+    def exists?(val = true)
+      if val
+        self.if_null(nil).eq?(nil)
+      else
+        self.if_null(nil).neq?(nil)
+      end
+    end
+
     def to_ast
       "$#{field_name}"
     end
